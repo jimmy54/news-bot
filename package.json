@@ -1,0 +1,23 @@
+{
+  "name": "news-bot",
+  "version": "1.0.0",
+  "description": "Daily research & tech news digest bot powered by GitHub Actions",
+  "type": "module",
+  "main": "scripts/run.js",
+  "scripts": {
+    "start": "node scripts/run.js"
+  },
+  "keywords": [
+    "rss",
+    "news",
+    "github-actions",
+    "automation"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "rss-parser": "^3.13.0",
+    "dayjs": "^1.11.10"
+  }
+}
+
