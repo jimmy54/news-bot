@@ -48,8 +48,17 @@ jobs:
           }
           
           # 添加并提交新的日报文件
+          # 判断是上午还是下午（UTC+8 时区）
+          CURRENT_HOUR=$(TZ='Asia/Shanghai' date +%H)
+          if [ "$CURRENT_HOUR" -lt 12 ]; then
+            TIME_SLOT="morning"
+            TIME_LABEL="上午"
+          else
+            TIME_SLOT="evening"
+            TIME_LABEL="晚上"
+          fi
           git add daily/
-          git commit -m "chore: daily research & tech digest $(date +'%Y-%m-%d')" || echo "No changes to commit"
+          git commit -m "chore: daily research & tech digest $(date +'%Y-%m-%d') ${TIME_LABEL}" || echo "No changes to commit"
           
           # 推送更改
           git push origin main

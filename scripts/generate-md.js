@@ -1,5 +1,5 @@
-export function generateMarkdown(date, data, summary = null, timestamp = null) {
-  let md = `# 🧠 科研 & 技术热点日报\n\n日期：${date}\n`;
+export function generateMarkdown(date, data, summary = null, timestamp = null, timeSlot = '') {
+  let md = `# 🧠 科研 & 技术热点日报\n\n日期：${date}${timeSlot ? ` ${timeSlot}` : ''}\n`;
 
   // 如果有时间戳，显示具体时间
   if (timestamp) {

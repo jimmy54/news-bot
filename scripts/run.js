@@ -1,18 +1,35 @@
 import fs from "fs";
 import path from "path";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc.js";
+import timezone from "dayjs/plugin/timezone.js";
 import { SOURCES, canFetchFullText, isArxivSource } from "./sources.js";
 import { fetchRSS } from "./fetch-rss.js";
 import { fetchArticleContent } from "./fetch-content.js";
 import { generateMarkdown } from "./generate-md.js";
 import { generateSummary } from "./generate-summary.js";
 
+// 启用 dayjs 的 timezone 插件
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
 const today = dayjs().format("YYYY-MM-DD");
 const timestamp = new Date().toISOString();
 
+// 判断是上午还是下午
+// GitHub Actions 运行在 UTC 时区：
+// - 09:00 UTC+8 = 01:00 UTC → morning
+// - 21:00 UTC+8 = 13:00 UTC → evening
+const utcHour = dayjs().utc().hour();
+const timeSlot = utcHour < 12 ? 'morning' : 'evening';  // 01:00 UTC = morning, 13:00 UTC = evening
+const timeSlotLabel = utcHour < 12 ? '上午' : '晚上';
+
+// 获取北京时间用于显示
+const beijingTime = dayjs().tz('Asia/Shanghai');
+
 console.log(`\n${'='.repeat(60)}`);
-console.log(`📰 科研 & 技术热点日报 - ${today}`);
-console.log(`⏰ 开始时间: ${new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })}`);
+console.log(`📰 科研 & 技术热点日报 - ${today} ${timeSlotLabel}`);
+console.log(`⏰ 开始时间: ${beijingTime.format('YYYY-MM-DD HH:mm:ss')} (UTC+8)`);
 console.log(`${'='.repeat(60)}\n`);
 
 const results = [];
@@ -119,7 +136,7 @@ try {
 }
 
 // 生成 Markdown
-const md = generateMarkdown(today, results, summary, timestamp);
+const md = generateMarkdown(today, results, summary, timestamp, timeSlotLabel);
 const dailyDir = path.join(process.cwd(), "daily");
 
 // Ensure daily directory exists
@@ -127,7 +144,9 @@ if (!fs.existsSync(dailyDir)) {
   fs.mkdirSync(dailyDir, { recursive: true });
 }
 
-const out = path.join(dailyDir, `${today}.md`);
+// 生成文件名：YYYY-MM-DD-morning.md 或 YYYY-MM-DD-evening.md
+const filename = `${today}-${timeSlot}.md`;
+const out = path.join(dailyDir, filename);
 fs.writeFileSync(out, md, "utf-8");
 
 const fileSize = (fs.statSync(out).size / 1024).toFixed(2);
