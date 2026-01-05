@@ -27,7 +27,7 @@ jobs:
       - name: Run daily digest
         env:
           SILICONFLOW_API_KEY: ${{ secrets.SILICONFLOW_API_KEY }}
-        timeout-minutes: 10
+        timeout-minutes: 15  # 增加到15分钟，确保有足够时间完成RSS抓取、内容抓取和LLM生成
         run: node scripts/run.js
 
       - name: Commit daily digest

@@ -94,7 +94,7 @@ export async function generateSummary(newsData, timestamp, maxRetries = 5) {
   const client = new OpenAI({
     apiKey: apiKey,
     baseURL: SILICONFLOW_API_URL,
-    timeout: 60000,  // 60秒超时
+    timeout: 600000,  // 10分钟超时（600秒），允许LLM有足够时间生成长内容
     maxRetries: 0,   // 禁用 OpenAI SDK 自己的重试，我们自己控制
   });
 
